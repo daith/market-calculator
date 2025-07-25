@@ -1,0 +1,58 @@
+{
+  "extends": [
+    "next/core-web-vitals",
+    "next/typescript"
+  ],
+  "rules": {
+    // 放寬未使用變數的警告
+    "@typescript-eslint/no-unused-vars": [
+      "warn",
+      {
+        "argsIgnorePattern": "^(_|unused)",
+        "varsIgnorePattern": "^(_|unused|[iI]gnored)",
+        "caughtErrorsIgnorePattern": "^(_|unused|error|e)$",
+        "destructuredArrayIgnorePattern": "^_",
+        "ignoreRestSiblings": true
+      }
+    ],
+    
+    // 允許使用 any 類型
+    "@typescript-eslint/no-explicit-any": "off",
+    
+    // 放寬 useEffect 依賴項檢查
+    "react-hooks/exhaustive-deps": "warn",
+    
+    // 允許使用 img 標籤（不強制使用 Next.js Image）
+    "@next/next/no-img-element": "off",
+    
+    // 完全允許使用 console.log（開發時有用）
+    "no-console": "off",
+    
+    // 放寬未使用的導入檢查
+    "@typescript-eslint/no-unused-imports": "off",
+    
+    // 允許空函數
+    "@typescript-eslint/no-empty-function": "off",
+    
+    // 禁用 prefer-const（允許使用 let）
+    "prefer-const": "off",
+    
+    // 允許非空斷言運算符 (!)
+    "@typescript-eslint/no-non-null-assertion": "off",
+    
+    // 允許在條件中賦值
+    "no-cond-assign": "warn",
+    
+    // 允許同步腳本（適用於某些第三方腳本）
+    "@next/next/no-sync-scripts": "warn",
+    
+    // 放寬變數聲明檢查
+    "no-var": "warn",
+    
+    // 允許空的 catch 塊
+    "no-empty": "warn",
+    
+    // 允許未使用的標籤
+    "no-unused-labels": "warn"
+  }
+}
