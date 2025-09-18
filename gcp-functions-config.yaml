@@ -1,0 +1,159 @@
+# GCP Cloud Functions 配置
+# 山腳下園藝工具 - 生產環境配置
+
+# API Function 配置
+api_function:
+  # 基本配置
+  name: "api"
+  runtime: "nodejs20"
+  entry_point: "api"
+
+  # 資源配置
+  memory: "512Mi"                    # 512MB 記憶體 (經濟且足夠)
+  timeout: "60s"                     # 60秒超時 (安全設定)
+  max_instances: 2                   # 最大實例數限制 (3位用戶極致優化)
+  min_instances: 0                   # 冷啟動節省成本 (3位用戶適用)
+  cpu: "1"                          # 1 vCPU
+
+  # 觸發器配置
+  trigger:
+    type: "http"
+    security_level: "secure_always"  # 強制 HTTPS
+
+  # 環境變數
+  environment_variables:
+    NODE_ENV: "production"
+    MEMORY_LIMIT_WARNING: "50"      # 50MB 記憶體警告閾值
+    MEMORY_LIMIT_CRITICAL: "100"    # 100MB 記憶體嚴重警告
+    HEALTH_CHECK_TIMEOUT: "15000"   # 15秒健康檢查超時
+    SHEET_CHECK_INTERVAL: "30000"   # 30秒 Google Sheets 檢查間隔
+
+  # 標籤
+  labels:
+    project: "market-calculator"
+    environment: "production"
+    team: "backend"
+    cost-center: "operations"
+
+  # VPC 配置 (可選)
+  vpc_connector:
+    enabled: false                   # 如不需要 VPC 連接可關閉
+
+  # 服務帳戶配置
+  service_account:
+    # 使用預設服務帳戶或指定自定義帳戶
+    email: "default"
+
+  # 安全配置
+  security:
+    ingress: "allow_all"            # 允許所有入站流量
+    egress: "private_ranges_only"   # 僅允許私有範圍出站流量
+
+  # 監控配置
+  monitoring:
+    enabled: true
+    metrics:
+      - "execution_count"
+      - "execution_times"
+      - "memory_usage"
+      - "error_count"
+
+# 不同環境配置
+environments:
+  # 開發環境
+  development:
+    memory: "256Mi"
+    timeout: "30s"
+    max_instances: 1                  # 3位用戶：開發環境1個實例足夠
+    min_instances: 0
+    environment_variables:
+      NODE_ENV: "development"
+      
+  # 測試環境  
+  staging:
+    memory: "256Mi"                  # 降低記憶體進一步節省成本
+    timeout: "45s"
+    max_instances: 1                 # 3位用戶：測試環境1個實例足夠
+    min_instances: 0
+    environment_variables:
+      NODE_ENV: "staging"
+      
+  # 生產環境
+  production:
+    memory: "512Mi"
+    timeout: "60s"
+    max_instances: 2                 # 3位用戶：生產環境2個實例最佳
+    min_instances: 0                 # 冷啟動節省成本
+    environment_variables:
+      NODE_ENV: "production"
+
+# 部署策略
+deployment:
+  strategy: "rolling"               # 滾動更新
+  max_surge: 2                     # 最多同時運行的新實例
+  max_unavailable: 0               # 確保服務不中斷
+
+  # 健康檢查
+  health_check:
+    enabled: true
+    path: "/api/health"
+    interval: "30s"
+    timeout: "10s"
+    failure_threshold: 3
+    success_threshold: 1
+
+# 自動擴縮容配置
+autoscaling:
+  target_cpu_utilization: 80        # 80% CPU 使用率觸發擴容
+  target_memory_utilization: 85     # 85% 記憶體使用率觸發擴容
+  scale_down_delay: "300s"          # 5分鐘後縮容
+  scale_up_delay: "60s"             # 1分鐘後擴容
+
+# 日誌配置
+logging:
+  level: "INFO"
+  structured: true
+  include_request_id: true
+
+  # 日誌保留期
+  retention:
+    development: "7d"
+    staging: "30d"
+    production: "90d"
+
+# 監控告警配置
+alerting:
+  # CPU 使用率告警
+  cpu_alert:
+    threshold: 80
+    duration: "5m"
+
+  # 記憶體使用率告警
+  memory_alert:
+    threshold: 85
+    duration: "3m"
+
+  # 錯誤率告警
+  error_rate_alert:
+    threshold: 5                    # 5% 錯誤率
+    duration: "2m"
+
+  # 回應時間告警
+  latency_alert:
+    threshold: "10s"
+    duration: "2m"
+
+# 成本優化
+cost_optimization:
+  # 冷啟動最小化
+  keep_warm:
+    enabled: true
+    schedule: "0 */4 * * *"         # 每4小時預熱一次
+
+  # 資源回收
+  idle_timeout: "15m"               # 15分鐘無活動後回收
+
+  # 成本監控
+  budget_alert:
+    monthly_limit: 50               # 月費用上限 USD
+    alert_threshold: 80             # 80% 時告警
