@@ -2,6 +2,8 @@
 
 A smart market calculator for cost analysis, pricing, and order management — built for supply chain vendors.
 
+**[Live Demo](https://vendorcalc.web.app)**
+
 ![Next.js](https://img.shields.io/badge/Next.js_15-000000?logo=nextdotjs&logoColor=white)
 ![TypeScript](https://img.shields.io/badge/TypeScript-3178C6?logo=typescript&logoColor=white)
 ![Tailwind CSS](https://img.shields.io/badge/Tailwind_CSS-06B6D4?logo=tailwindcss&logoColor=white)
